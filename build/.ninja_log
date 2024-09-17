@@ -96,3 +96,5 @@
 976	1305	7482355431056888	CMakeFiles/TCD1304.dir/C_/Users/kentc/.pico-sdk/sdk/2.0.0/lib/tinyusb/src/common/tusb_fifo.c.obj	93b854c0001eb362
 1067	1312	7482355431967176	CMakeFiles/TCD1304.dir/C_/Users/kentc/.pico-sdk/sdk/2.0.0/src/rp2_common/hardware_pio/pio.c.obj	decfcf81f63148c8
 25	726	7482889661465903	build.ninja	fbf749722834988e
+40	205	7482891204957089	CMakeFiles/TCD1304.dir/TCD1304.c.obj	d31a470d0c59c557
+206	471	7482891206624138	TCD1304.elf	1b82f2ebe7937306
