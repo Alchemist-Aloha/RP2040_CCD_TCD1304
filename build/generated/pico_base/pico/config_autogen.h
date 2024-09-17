@@ -4,7 +4,7 @@
 
 // based on PICO_CONFIG_HEADER_FILES:
 
-#include "C:/Users/kentc/.pico-sdk/sdk/2.0.0/src/boards/include/boards/waveshare_rp2040_plus_16mb.h"
-#include "C:/Users/kentc/.pico-sdk/sdk/2.0.0/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h"
+#include "C:/Users/Kent/.pico-sdk/sdk/2.0.0/src/boards/include/boards/pico.h"
+#include "C:/Users/Kent/.pico-sdk/sdk/2.0.0/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h"
 
 // based on PICO_RP2040_CONFIG_HEADER_FILES:

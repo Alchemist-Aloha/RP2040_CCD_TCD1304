@@ -22,7 +22,7 @@
 // PWM configuration
 void setup_pwm(uint slice_num, uint channel) {
     // Set the wrap value to generate 2 MHz frequency
-    uint32_t wrap_value = 62;  // Based on 126 MHz system clock and 2 MHz frequency
+    uint32_t wrap_value = 114;  // Based on 230 MHz system clock and 2 MHz frequency
     pwm_set_wrap(slice_num, wrap_value);  // Set the wrap value (16-bit)
     pwm_set_chan_level(slice_num, channel, wrap_value / 2);  // Set duty cycle (50%)
     pwm_set_enabled(slice_num, true);  // Enable PWM output
@@ -36,7 +36,7 @@ uint8_t capture_buf[CAPTURE_DEPTH];
 
 int main() {
     // Set system clock frequency
-    set_sys_clock_khz(126000, true);
+    set_sys_clock_khz(230000, true);
     stdio_init_all();
 
     // Initialize PWM on the specified pin
@@ -122,7 +122,7 @@ int main() {
         busy_wait_us_32(8);
         gpio_put(ICG_PIN, 0);
         sleep_ms(300);
-        
+
         // Print samples to stdout so you can display them in pyplot, excel, matlab
         for (int i = 0; i < CAPTURE_DEPTH; ++i) {        
             printf("%-3d, ", capture_buf[i]);
