@@ -48,11 +48,13 @@ int main() {
     // Initialize GPIO for SH and ICG
     gpio_init(SH_PIN);
     gpio_set_dir(SH_PIN, GPIO_OUT);
-    gpio_put(SH_PIN, 1);
+    // gpio_put(SH_PIN, 1); // with 74hc04
+    gpio_put(SH_PIN, 0); // without 74hc04
 
     gpio_init(ICG_PIN);
     gpio_set_dir(ICG_PIN, GPIO_OUT);
-    gpio_put(ICG_PIN, 0);
+    // gpio_put(ICG_PIN, 0); // with 74hc04
+    gpio_put(ICG_PIN, 1); // without 74hc04
 
     // Init GPIO for analogue use: hi-Z, no pulls, disable digital input buffer.
     adc_gpio_init(ADC_PIN + CAPTURE_CHANNEL);
@@ -91,20 +93,20 @@ int main() {
 
     while (true) {
         // Control SH and ICG pins
-        gpio_put(ICG_PIN, 1);
+        // gpio_put(ICG_PIN, 1); // with 74hc04
+        gpio_put(ICG_PIN, 0); // without 74hc04
         // delay before exposure for 100 cpu cycles (~430 ns)
-        asm volatile(
-            "mov  r0, #33\n"          // 1 cycle
-            "loop1: subs  r0, r0, #1\n" // 1 cycle
-            "bne   loop1\n"            // 2 cycles if loop taken, 1 if not
-        );
-        gpio_put(SH_PIN, 0);
+        __asm volatile ("nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n");
+        // gpio_put(SH_PIN, 0); // with 74hc04
+        gpio_put(SH_PIN, 1); // without 74hc04
         // exposure time
-        busy_wait_us_32(500);
-        gpio_put(SH_PIN, 1);
+        busy_wait_us_32(5000);
+        // gpio_put(SH_PIN, 1); // with 74hc04
+        gpio_put(SH_PIN, 0); // without 74hc04
         // delay after exposure
         busy_wait_us_32(5);
-        gpio_put(ICG_PIN, 0);
+        // gpio_put(ICG_PIN, 0); // with 74hc04
+        gpio_put(ICG_PIN, 1); // without 74hc04
 
         dma_channel_configure(dma_chan, &cfg,
             capture_buf,    // dst
@@ -123,12 +125,6 @@ int main() {
         adc_run(false);
         adc_fifo_drain();
 
-        // gpio_put(SH_PIN, 0);
-        // gpio_put(ICG_PIN, 1);
-        // busy_wait_us_32(5);
-        // gpio_put(SH_PIN, 1);
-        // busy_wait_us_32(5);
-        // gpio_put(ICG_PIN, 0);
 
         sleep_ms(300);
 

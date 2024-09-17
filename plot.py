@@ -41,7 +41,7 @@ def plot_spectrum():
     x_axis = np.arange(len(capture_buf))
     
     plt.figure(figsize=(10, 6))
-    plt.plot(x_axis, capture_buf, label='ADC Values')
+    plt.plot(x_axis[32:], capture_buf[32:], label='ADC Values')
     plt.xlabel('Sample Number')
     plt.ylabel('ADC Value')
     plt.title('Captured Spectrum')
