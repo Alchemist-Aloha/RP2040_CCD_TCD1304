@@ -1931,9 +1931,9 @@ Discarded input sections
  .debug_frame   0x00000000      0x1c4 CMakeFiles/TCD1304.dir/C_/Users/kentc/.pico-sdk/sdk/2.0.0/src/rp2_common/hardware_i2c/i2c.c.obj
  .ARM.attributes
                 0x00000000       0x2c CMakeFiles/TCD1304.dir/C_/Users/kentc/.pico-sdk/sdk/2.0.0/src/rp2_common/hardware_i2c/i2c.c.obj
- .text          0x00000000        0x0 C:\Users\kentc\AppData\Local\Temp\cc4cP3iN.o
- .data          0x00000000        0x0 C:\Users\kentc\AppData\Local\Temp\cc4cP3iN.o
- .bss           0x00000000        0x0 C:\Users\kentc\AppData\Local\Temp\cc4cP3iN.o
+ .text          0x00000000        0x0 C:\Users\kentc\AppData\Local\Temp\ccg1ydKl.o
+ .data          0x00000000        0x0 C:\Users\kentc\AppData\Local\Temp\ccg1ydKl.o
+ .bss           0x00000000        0x0 C:\Users\kentc\AppData\Local\Temp\ccg1ydKl.o
  .data          0x00000000        0x0 C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/bin/../lib/gcc/arm-none-eabi/13.2.1/thumb/v6-m/nofp\libgcc.a(_dvmd_tls.o)
  .bss           0x00000000        0x0 C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/bin/../lib/gcc/arm-none-eabi/13.2.1/thumb/v6-m/nofp\libgcc.a(_dvmd_tls.o)
  .text          0x00000000        0x0 C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/bin/../lib/gcc/arm-none-eabi/13.2.1/thumb/v6-m/nofp\libg.a(libc_a-calloc.o)
@@ -2717,7 +2717,7 @@ LOAD C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/bin/../lib/gcc/arm-none-eabi/1
 .boot2          0x10000000      0x100
                 0x10000000                        __boot2_start__ = .
  *(.boot2)
- .boot2         0x10000000      0x100 C:\Users\kentc\AppData\Local\Temp\cc4cP3iN.o
+ .boot2         0x10000000      0x100 C:\Users\kentc\AppData\Local\Temp\ccg1ydKl.o
                 0x10000100                        __boot2_end__ = .
                 0x00000001                        ASSERT (((__boot2_end__ - __boot2_start__) == 0x100), ERROR: Pico second stage bootloader must be 256 bytes in size)
 
@@ -3990,7 +3990,7 @@ LOAD CMakeFiles/TCD1304.dir/C_/Users/kentc/.pico-sdk/sdk/2.0.0/src/rp2_common/ha
 LOAD CMakeFiles/TCD1304.dir/C_/Users/kentc/.pico-sdk/sdk/2.0.0/src/rp2_common/pico_multicore/multicore.c.obj
 LOAD CMakeFiles/TCD1304.dir/C_/Users/kentc/.pico-sdk/sdk/2.0.0/src/rp2_common/hardware_spi/spi.c.obj
 LOAD CMakeFiles/TCD1304.dir/C_/Users/kentc/.pico-sdk/sdk/2.0.0/src/rp2_common/hardware_i2c/i2c.c.obj
-LOAD C:\Users\kentc\AppData\Local\Temp\cc4cP3iN.o
+LOAD C:\Users\kentc\AppData\Local\Temp\ccg1ydKl.o
 LOAD C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/bin/../lib/gcc/arm-none-eabi/13.2.1/thumb/v6-m/nofp\libstdc++.a
 LOAD C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/bin/../lib/gcc/arm-none-eabi/13.2.1/thumb/v6-m/nofp\libm.a
 START GROUP
@@ -4123,7 +4123,7 @@ LOAD linker stubs
  .ARM.attributes
                 0x0000090c       0x2c CMakeFiles/TCD1304.dir/C_/Users/kentc/.pico-sdk/sdk/2.0.0/src/rp2_common/pico_multicore/multicore.c.obj
  .ARM.attributes
-                0x00000938       0x22 C:\Users\kentc\AppData\Local\Temp\cc4cP3iN.o
+                0x00000938       0x22 C:\Users\kentc\AppData\Local\Temp\ccg1ydKl.o
  .ARM.attributes
                 0x0000095a       0x1e C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/bin/../lib/gcc/arm-none-eabi/13.2.1/thumb/v6-m/nofp\libgcc.a(_dvmd_tls.o)
  .ARM.attributes

@@ -114,6 +114,7 @@ int main() {
         printf("\n\rCapture finished\n\r");
         adc_run(false);
         adc_fifo_drain();
+
         gpio_put(SH_PIN, 0);
         gpio_put(ICG_PIN, 1);
         busy_wait_us_32(2);
@@ -121,6 +122,7 @@ int main() {
         busy_wait_us_32(8);
         gpio_put(ICG_PIN, 0);
         sleep_ms(300);
+        
         // Print samples to stdout so you can display them in pyplot, excel, matlab
         for (int i = 0; i < CAPTURE_DEPTH; ++i) {        
             printf("%-3d, ", capture_buf[i]);
