@@ -91,8 +91,14 @@ int main() {
 
     while (true) {
         // Control SH and ICG pins
-        gpio_put(SH_PIN, 0);
         gpio_put(ICG_PIN, 1);
+        // delay before exposure for 100 cpu cycles (~430 ns)
+        asm volatile(
+            "mov  r0, #33\n"          // 1 cycle
+            "loop1: subs  r0, r0, #1\n" // 1 cycle
+            "bne   loop1\n"            // 2 cycles if loop taken, 1 if not
+        );
+        gpio_put(SH_PIN, 0);
         // exposure time
         busy_wait_us_32(500);
         gpio_put(SH_PIN, 1);
@@ -131,7 +137,7 @@ int main() {
             printf("%-3d, ", capture_buf[i]);
             if (i % 30 == 29)
                 printf("\n");
-            busy_wait_us_32(6);
+            busy_wait_us_32(1);
         }
     }
 }
