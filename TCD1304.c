@@ -22,7 +22,7 @@
 // PWM configuration
 void setup_pwm(uint slice_num, uint channel) {
     // Set the wrap value to generate 2 MHz frequency
-    uint32_t wrap_value = 114;  // Based on 230 MHz system clock and 2 MHz frequency
+    uint32_t wrap_value = 114;  // Based on 230 MHz system clock and 2 MHz frequency. wrap_value = (sys_clock / PWM frequency)-1
     pwm_set_wrap(slice_num, wrap_value);  // Set the wrap value (16-bit)
     pwm_set_chan_level(slice_num, channel, wrap_value / 2);  // Set duty cycle (50%)
     pwm_set_enabled(slice_num, true);  // Enable PWM output
@@ -93,9 +93,11 @@ int main() {
         // Control SH and ICG pins
         gpio_put(SH_PIN, 0);
         gpio_put(ICG_PIN, 1);
-        busy_wait_us_32(2);
+        // exposure time
+        busy_wait_us_32(500);
         gpio_put(SH_PIN, 1);
-        busy_wait_us_32(8);
+        // delay after exposure
+        busy_wait_us_32(5);
         gpio_put(ICG_PIN, 0);
 
         dma_channel_configure(dma_chan, &cfg,
@@ -115,12 +117,13 @@ int main() {
         adc_run(false);
         adc_fifo_drain();
 
-        gpio_put(SH_PIN, 0);
-        gpio_put(ICG_PIN, 1);
-        busy_wait_us_32(2);
-        gpio_put(SH_PIN, 1);
-        busy_wait_us_32(8);
-        gpio_put(ICG_PIN, 0);
+        // gpio_put(SH_PIN, 0);
+        // gpio_put(ICG_PIN, 1);
+        // busy_wait_us_32(5);
+        // gpio_put(SH_PIN, 1);
+        // busy_wait_us_32(5);
+        // gpio_put(ICG_PIN, 0);
+
         sleep_ms(300);
 
         // Print samples to stdout so you can display them in pyplot, excel, matlab

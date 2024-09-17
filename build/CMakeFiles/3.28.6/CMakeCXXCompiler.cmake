@@ -1,4 +1,4 @@
-set(CMAKE_CXX_COMPILER "C:/Users/Kent/.pico-sdk/toolchain/13_2_Rel1/bin/arm-none-eabi-g++.exe")
+set(CMAKE_CXX_COMPILER "C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/bin/arm-none-eabi-g++.exe")
 set(CMAKE_CXX_COMPILER_ARG1 "")
 set(CMAKE_CXX_COMPILER_ID "GNU")
 set(CMAKE_CXX_COMPILER_VERSION "13.2.1")
@@ -22,11 +22,11 @@ set(CMAKE_CXX_SIMULATE_VERSION "")
 
 
 
-set(CMAKE_AR "C:/Users/Kent/.pico-sdk/toolchain/13_2_Rel1/bin/arm-none-eabi-ar.exe")
-set(CMAKE_CXX_COMPILER_AR "C:/Users/Kent/.pico-sdk/toolchain/13_2_Rel1/bin/arm-none-eabi-gcc-ar.exe")
-set(CMAKE_RANLIB "C:/Users/Kent/.pico-sdk/toolchain/13_2_Rel1/bin/arm-none-eabi-ranlib.exe")
-set(CMAKE_CXX_COMPILER_RANLIB "C:/Users/Kent/.pico-sdk/toolchain/13_2_Rel1/bin/arm-none-eabi-gcc-ranlib.exe")
-set(CMAKE_LINKER "C:/Users/Kent/.pico-sdk/toolchain/13_2_Rel1/bin/arm-none-eabi-ld.exe")
+set(CMAKE_AR "C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/bin/arm-none-eabi-ar.exe")
+set(CMAKE_CXX_COMPILER_AR "C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/bin/arm-none-eabi-gcc-ar.exe")
+set(CMAKE_RANLIB "C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/bin/arm-none-eabi-ranlib.exe")
+set(CMAKE_CXX_COMPILER_RANLIB "C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/bin/arm-none-eabi-gcc-ranlib.exe")
+set(CMAKE_LINKER "C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/bin/arm-none-eabi-ld.exe")
 set(CMAKE_MT "")
 set(CMAKE_TAPI "CMAKE_TAPI-NOTFOUND")
 set(CMAKE_COMPILER_IS_GNUCXX 1)
@@ -79,8 +79,8 @@ endif()
 
 
 
-set(CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES "C:/Users/Kent/.pico-sdk/toolchain/13_2_Rel1/arm-none-eabi/include/c++/13.2.1;C:/Users/Kent/.pico-sdk/toolchain/13_2_Rel1/arm-none-eabi/include/c++/13.2.1/arm-none-eabi/thumb/v6-m/nofp;C:/Users/Kent/.pico-sdk/toolchain/13_2_Rel1/arm-none-eabi/include/c++/13.2.1/backward;C:/Users/Kent/.pico-sdk/toolchain/13_2_Rel1/lib/gcc/arm-none-eabi/13.2.1/include;C:/Users/Kent/.pico-sdk/toolchain/13_2_Rel1/lib/gcc/arm-none-eabi/13.2.1/include-fixed;C:/Users/Kent/.pico-sdk/toolchain/13_2_Rel1/arm-none-eabi/include")
+set(CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES "C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/arm-none-eabi/include/c++/13.2.1;C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/arm-none-eabi/include/c++/13.2.1/arm-none-eabi/thumb/v6-m/nofp;C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/arm-none-eabi/include/c++/13.2.1/backward;C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/lib/gcc/arm-none-eabi/13.2.1/include;C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/lib/gcc/arm-none-eabi/13.2.1/include-fixed;C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/arm-none-eabi/include")
 set(CMAKE_CXX_IMPLICIT_LINK_LIBRARIES "")
-set(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "C:/Users/Kent/.pico-sdk/toolchain/13_2_Rel1/lib/gcc/arm-none-eabi/13.2.1/thumb/v6-m/nofp;C:/Users/Kent/.pico-sdk/toolchain/13_2_Rel1/arm-none-eabi/lib/thumb/v6-m/nofp;C:/Users/Kent/.pico-sdk/toolchain/13_2_Rel1/lib/gcc/arm-none-eabi/13.2.1;C:/Users/Kent/.pico-sdk/toolchain/13_2_Rel1/lib/gcc;C:/Users/Kent/.pico-sdk/toolchain/13_2_Rel1/arm-none-eabi/lib")
+set(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/lib/gcc/arm-none-eabi/13.2.1/thumb/v6-m/nofp;C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/arm-none-eabi/lib/thumb/v6-m/nofp;C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/lib/gcc/arm-none-eabi/13.2.1;C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/lib/gcc;C:/Users/kentc/.pico-sdk/toolchain/13_2_Rel1/arm-none-eabi/lib")
 set(CMAKE_CXX_IMPLICIT_LINK_FRAMEWORK_DIRECTORIES "")
 set(CMAKE_CXX_COMPILER_CLANG_RESOURCE_DIR "")
