@@ -12,7 +12,6 @@
 #include "hardware/dma.h"
 // For resistor DAC output:
 #include "pico/multicore.h"
-#include "resistor_dac.pio.h"
 // TCD1304 pinout
 #define PWM_PIN 14
 #define SH_PIN 15
@@ -31,7 +30,7 @@ void setup_pwm(uint slice_num, uint channel)
 
 // Channel 0 is GPIO26
 #define CAPTURE_CHANNEL 0
-#define CAPTURE_DEPTH 65536
+#define CAPTURE_DEPTH 3694
 
 int main()
 {
@@ -49,12 +48,12 @@ int main()
     gpio_init(SH_PIN);
     gpio_set_dir(SH_PIN, GPIO_OUT);
     // gpio_put(SH_PIN, 1); // with 74hc04
-    gpio_put(SH_PIN, 0); // without 74hc04
+    gpio_put(SH_PIN, 1); // without 74hc04
 
     gpio_init(ICG_PIN);
     gpio_set_dir(ICG_PIN, GPIO_OUT);
     // gpio_put(ICG_PIN, 0); // with 74hc04
-    gpio_put(ICG_PIN, 1); // without 74hc04
+    gpio_put(ICG_PIN, 0); // without 74hc04
 
     // Init GPIO for analogue use: hi-Z, no pulls, disable digital input buffer.
     adc_gpio_init(ADC_PIN + CAPTURE_CHANNEL);
@@ -75,7 +74,7 @@ int main()
     // cycles, so in general you want a divider of 0 (hold down the button
     // continuously) or > 95 (take samples less frequently than 96 cycle
     // intervals). This is all timed by the 48 MHz ADC clock.
-    adc_set_clkdiv(0);
+    adc_set_clkdiv(96);
 
     printf("Arming DMA\n");
     sleep_ms(1000);
@@ -98,21 +97,21 @@ int main()
 
         // Control SH and ICG pins
         // gpio_put(ICG_PIN, 1); // with 74hc04
-        gpio_put(ICG_PIN, 0); // without 74hc04
+        gpio_put(ICG_PIN, 1); // without 74hc04
         // delay before exposure for 100 cpu cycles (~430 ns)
         __asm volatile("nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n");
         // gpio_put(SH_PIN, 0); // with 74hc04
-        gpio_put(SH_PIN, 1); // without 74hc04
-        // exposure time
-        sleep_ms(500);
-        // gpio_put(SH_PIN, 1); // with 74hc04
         gpio_put(SH_PIN, 0); // without 74hc04
+        // exposure time
+        sleep_ms(5000);
+        // gpio_put(SH_PIN, 1); // with 74hc04
+        gpio_put(SH_PIN, 1); // without 74hc04
         // delay after exposure
         busy_wait_us_32(5);
         // gpio_put(ICG_PIN, 0); // with 74hc04
-        gpio_put(ICG_PIN, 1); // without 74hc04
+        gpio_put(ICG_PIN, 0); // without 74hc04
 
-        busy_wait_us_32(60);
+        // busy_wait_us_32(60);
 
         dma_channel_configure(dma_chan, &cfg,
                               capture_buf,   // dst
@@ -137,7 +136,7 @@ int main()
             printf("%-3d, ", capture_buf[i]);
             if (i % 30 == 29)
                 printf("\n");
-            busy_wait_us_32(1);
+            // busy_wait_us_32(1);
         }
     }
 }
