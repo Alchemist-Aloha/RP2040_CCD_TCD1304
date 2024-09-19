@@ -44,7 +44,7 @@ pico_set_program_name(TCD1304 "TCD1304")
 pico_set_program_version(TCD1304 "0.1")
 
 # Generate PIO header
-pico_generate_pio_header(TCD1304 ${CMAKE_CURRENT_LIST_DIR}/resistor_dac.pio)
+# pico_generate_pio_header(TCD1304 ${CMAKE_CURRENT_LIST_DIR}/resistor_dac.pio)
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(TCD1304 0)
