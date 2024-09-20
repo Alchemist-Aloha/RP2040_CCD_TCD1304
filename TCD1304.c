@@ -30,7 +30,7 @@ void setup_pwm(uint slice_num, uint channel)
 
 // Channel 0 is GPIO26
 #define CAPTURE_CHANNEL 0
-#define CAPTURE_DEPTH 3694
+#define CAPTURE_DEPTH 65536
 
 int main()
 {
@@ -48,12 +48,12 @@ int main()
     gpio_init(SH_PIN);
     gpio_set_dir(SH_PIN, GPIO_OUT);
     // gpio_put(SH_PIN, 1); // with 74hc04
-    gpio_put(SH_PIN, 1); // without 74hc04
+    gpio_put(SH_PIN, 0); // without 74hc04
 
     gpio_init(ICG_PIN);
     gpio_set_dir(ICG_PIN, GPIO_OUT);
     // gpio_put(ICG_PIN, 0); // with 74hc04
-    gpio_put(ICG_PIN, 0); // without 74hc04
+    gpio_put(ICG_PIN, 1); // without 74hc04
 
     // Init GPIO for analogue use: hi-Z, no pulls, disable digital input buffer.
     adc_gpio_init(ADC_PIN + CAPTURE_CHANNEL);
@@ -97,38 +97,23 @@ int main()
 
         // Control SH and ICG pins
         // gpio_put(ICG_PIN, 1); // with 74hc04
-        gpio_put(ICG_PIN, 1); // without 74hc04
+        gpio_put(ICG_PIN, 0); // without 74hc04
         // delay before exposure for 100 cpu cycles (~430 ns)
         __asm volatile("nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n");
         // gpio_put(SH_PIN, 0); // with 74hc04
-        gpio_put(SH_PIN, 0); // without 74hc04
-        // exposure time
-        sleep_ms(5000);
-        // gpio_put(SH_PIN, 1); // with 74hc04
         gpio_put(SH_PIN, 1); // without 74hc04
+        // exposure time
+        sleep_ms(500);
+        // gpio_put(SH_PIN, 1); // with 74hc04
+        gpio_put(SH_PIN, 0); // without 74hc04
         // delay after exposure
         busy_wait_us_32(5);
         // gpio_put(ICG_PIN, 0); // with 74hc04
-        gpio_put(ICG_PIN, 0); // without 74hc04
+        gpio_put(ICG_PIN, 1); // without 74hc04
 
         // busy_wait_us_32(60);
 
-        dma_channel_configure(dma_chan, &cfg,
-                              capture_buf,   // dst
-                              &adc_hw->fifo, // src
-                              CAPTURE_DEPTH, // transfer count
-                              true           // start immediately
-        );
-
-        // printf("Starting capture\n");
-        adc_run(true);
-
-        // Once DMA finishes, stop any new conversions from starting, and clean up
-        // the FIFO in case the ADC was still mid-conversion.
-        dma_channel_wait_for_finish_blocking(dma_chan);
-        printf("\n\rCapture finished\n\r");
-        adc_run(false);
-        adc_fifo_drain();
+        dma_adc_read(dma_chan, capture_buf, cfg);
 
         // Print samples to stdout so you can display them in pyplot, excel, matlab
         for (int i = 0; i < CAPTURE_DEPTH; ++i)
