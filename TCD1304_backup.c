@@ -14,30 +14,21 @@
 #include "pico/multicore.h"
 // TCD1304 pinout
 #define PWM_PIN 14
-#define PWM_TEST_PIN 13
-#define SH_PIN 9
+#define PWM_TEST_PIN 9
+#define SH_PIN 15
 #define ICG_PIN 13
 #define ADC_PIN 26
 
 // PWM configuration
-void setup_pwm_mc(uint slice_num, uint channel)
+void setup_pwm(uint slice_num, uint channel)
 {
     // Set the wrap value to generate 2 MHz frequency
-    uint32_t wrap_value = 69;                               // Based on 230 MHz system clock and 2 MHz frequency. wrap_value = (sys_clock / PWM frequency)-1
+    uint32_t wrap_value = 69;                              // Based on 230 MHz system clock and 2 MHz frequency. wrap_value = (sys_clock / PWM frequency)-1
     pwm_set_wrap(slice_num, wrap_value);                    // Set the wrap value (16-bit)
     pwm_set_chan_level(slice_num, channel, wrap_value / 2); // Set duty cycle (50%)
     pwm_set_enabled(slice_num, true);                       // Enable PWM output
 }
 
-// PWM configuration of SH
-void setup_pwm_sh(uint slice_num, uint channel)
-{
-    // Set the wrap value to generate 100 kHz frequency
-    uint32_t wrap_value = 1399;                               // Based on 140 MHz system clock and 2 MHz frequency. wrap_value = (sys_clock / PWM frequency)-1
-    pwm_set_wrap(slice_num, wrap_value);                      // Set the wrap value (16-bit)
-    pwm_set_chan_level(slice_num, channel, wrap_value * 0.4); // Set duty cycle (50%)
-    pwm_set_enabled(slice_num, true);                         // Enable PWM output
-}
 // PWM test pin configuration
 void setup_pwm2(uint slice_num, uint channel)
 {
@@ -100,27 +91,19 @@ int main()
     gpio_set_function(PWM_PIN, GPIO_FUNC_PWM);
     uint slice_num = pwm_gpio_to_slice_num(PWM_PIN);
     uint channel = pwm_gpio_to_channel(PWM_PIN);
-    setup_pwm_mc(slice_num, channel);
+    setup_pwm(slice_num, channel);
 
-    // // Initialize PWM test on the specified pin
-    // gpio_set_function(PWM_TEST_PIN, GPIO_FUNC_PWM);
-    // uint slice_num_test = pwm_gpio_to_slice_num(PWM_TEST_PIN);
-    // uint channel_test = pwm_gpio_to_channel(PWM_TEST_PIN);
-    // setup_pwm2(slice_num_test, channel_test);
+    // Initialize PWM test on the specified pin
+    gpio_set_function(PWM_TEST_PIN, GPIO_FUNC_PWM);
+    uint slice_num_test = pwm_gpio_to_slice_num(PWM_TEST_PIN);
+    uint channel_test = pwm_gpio_to_channel(PWM_TEST_PIN);
+    setup_pwm2(slice_num_test, channel_test);
 
-    // Initialize PWM for SH
-    gpio_set_function(SH_PIN, GPIO_FUNC_PWM);
-    uint slice_num_sh = pwm_gpio_to_slice_num(SH_PIN);
-    uint channel_sh = pwm_gpio_to_channel(SH_PIN);
-    setup_pwm_sh(slice_num_sh, channel_sh);
-    pwm_set_enabled(slice_num_sh, false); // Disable SH output for now
+    // Initialize GPIO for SH and ICG
+    gpio_init(SH_PIN);
+    gpio_set_dir(SH_PIN, GPIO_OUT);
+    gpio_put(SH_PIN, 0); // without 74hc04
 
-    // // Initialize GPIO for SH
-    // gpio_init(SH_PIN);
-    // gpio_set_dir(SH_PIN, GPIO_OUT);
-    // gpio_put(SH_PIN, 0); // without 74hc04
-
-    // Initialize GPIO for ICG
     gpio_init(ICG_PIN);
     gpio_set_dir(ICG_PIN, GPIO_OUT);
     gpio_put(ICG_PIN, 1); // without 74hc04
@@ -162,45 +145,21 @@ int main()
 
     uint8_t capture_buf[CAPTURE_DEPTH];
 
-    // old code
-    // while (true)
-    // {
-    //     setup_pwm_mc(slice_num, channel);
-    //     start_ccd_readout();
-
-    //     dma_adc_read(dma_chan, capture_buf, cfg);
-
-    //     // Print samples to stdout so you can display them in pyplot, excel, matlab
-    //     for (int i = 0; i < CAPTURE_DEPTH; ++i)
-    //     {
-    //         printf("%-3d, ", capture_buf[i]);
-    //         if (i % 30 == 29)
-    //             printf("\n");
-    //         __asm volatile("nop\n");
-    //         // busy_wait_us_32(1);
-    //     }
-    // }
-
-    // test code
     while (true)
     {
+        setup_pwm(slice_num, channel);
+        start_ccd_readout();
 
-        // Control SH and ICG pins
-        gpio_put(ICG_PIN, 0); // without 74hc04
-        // delay before exposure for 100 cpu cycles (~430 ns)
-        // __asm volatile("nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n");
-        pwm_set_enabled(slice_num_sh, true); // Enable SH output
-        busy_wait_us_32(10);
-        gpio_put(ICG_PIN, 1); // without 74hc04
         dma_adc_read(dma_chan, capture_buf, cfg);
+
+        // Print samples to stdout so you can display them in pyplot, excel, matlab
         for (int i = 0; i < CAPTURE_DEPTH; ++i)
         {
             printf("%-3d, ", capture_buf[i]);
             if (i % 30 == 29)
                 printf("\n");
-            // __asm volatile("nop\n");
-            busy_wait_us_32(1);
+            __asm volatile("nop\n");
+            // busy_wait_us_32(1);
         }
-        pwm_set_enabled(slice_num_sh, false); // Disable SH output
     }
 }
