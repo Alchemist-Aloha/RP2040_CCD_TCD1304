@@ -156,26 +156,6 @@ int main()
 
     uint8_t capture_buf[CAPTURE_DEPTH];
 
-    // old code
-    // while (true)
-    // {
-    //     setup_pwm_mc(slice_num, channel);
-    //     start_ccd_readout();
-
-    //     dma_adc_read(dma_chan, capture_buf, cfg);
-
-    //     // Print samples to stdout so you can display them in pyplot, excel, matlab
-    //     for (int i = 0; i < CAPTURE_DEPTH; ++i)
-    //     {
-    //         printf("%-3d, ", capture_buf[i]);
-    //         if (i % 30 == 29)
-    //             printf("\n");
-    //         __asm volatile("nop\n");
-    //         // busy_wait_us_32(1);
-    //     }
-    // }
-
-    // test code
     while (true)
     {
         for (int i = 0; i < 50; ++i)
@@ -190,7 +170,7 @@ int main()
         
 
         adc_run(true);
-        // delay before exposure for 100 cpu cycles (~430 ns)
+        // delay before exposure for 30 cpu cycles (~300 ns)
         __asm volatile("nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n");
         gpio_put(SH_PIN, 1); 
         busy_wait_us_32(2);
