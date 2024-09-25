@@ -154,7 +154,7 @@ int main()
     // Pace transfers based on availability of ADC samples
     channel_config_set_dreq(&cfg, DREQ_ADC);
 
-    uin t8_t capture_buf[CAPTURE_DEPTH];
+    uint8_t capture_buf[CAPTURE_DEPTH];
 
     // old code
     // while (true)
