@@ -58,8 +58,6 @@ target_link_libraries(TCD1304
         # For the dummy output:
         hardware_pio
         pico_multicore
-        hardware_spi
-        hardware_i2c
         hardware_timer
         hardware_clocks
         hardware_pwm
