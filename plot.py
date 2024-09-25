@@ -2,9 +2,9 @@ import matplotlib.pyplot as plt
 import serial  # To read data from serial port
 import numpy as np
 
-
+PORT = 'COM23'  # Replace with your COM port
 # Reading data from serial (replace with your COM port and baudrate)
-ser = serial.Serial('COM23', 115200, timeout=1)
+
 
 # Function to read capture_buf data from the serial port
 
@@ -44,16 +44,19 @@ def plot_spectrum(capture_buf):
     plt.plot(x_axis, capture_buf, label='ADC Values')
     plt.xlabel('Sample Number')
     plt.ylabel('ADC Value')
+    plt.ylim(0,255)
     plt.title('Captured Spectrum')
     plt.grid(True)
     plt.legend()
     plt.show()
 
 
+
 # Main code to read and plot the spectrum
 try:
     while True:
         capture_buf = []
+        ser = serial.Serial(PORT, 115200, timeout=1)
         # Reading capture buffer from serial
         print("Reading capture buffer data...")
         capture_buf = read_capture_buf()
@@ -65,7 +68,7 @@ try:
 
         # Wait before the next read (for simulation purposes)
         input("Press Enter to capture the next spectrum...")
-
+        ser.close()
 except KeyboardInterrupt:
     print("Exiting program...")
 finally:

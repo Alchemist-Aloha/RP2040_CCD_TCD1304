@@ -14,7 +14,7 @@
 #include "pico/multicore.h"
 // TCD1304 pinout
 #define PWM_PIN 14
-#define PWM_TEST_PIN 7
+#define PWM_TEST_PIN 13
 #define SH_PIN 9
 #define ICG_PIN 13
 #define ADC_PIN 26
@@ -23,7 +23,7 @@
 void setup_pwm_mc(uint slice_num, uint channel)
 {
     // Set the wrap value to generate 2 MHz frequency
-    uint32_t wrap_value = 50;                               // Based on 100 MHz system clock and 2 MHz frequency. wrap_value = (sys_clock / PWM frequency)-1
+    uint32_t wrap_value = 69;                               // Based on 230 MHz system clock and 2 MHz frequency. wrap_value = (sys_clock / PWM frequency)-1
     pwm_set_wrap(slice_num, wrap_value);                    // Set the wrap value (16-bit)
     pwm_set_chan_level(slice_num, channel, wrap_value / 2); // Set duty cycle (50%)
     pwm_set_enabled(slice_num, true);                       // Enable PWM output
@@ -33,7 +33,7 @@ void setup_pwm_mc(uint slice_num, uint channel)
 void setup_pwm_sh(uint slice_num, uint channel)
 {
     // Set the wrap value to generate 100 kHz frequency
-    uint32_t wrap_value = 1000;                               // Based on 140 MHz system clock and 2 MHz frequency. wrap_value = (sys_clock / PWM frequency)-1
+    uint32_t wrap_value = 1399;                               // Based on 140 MHz system clock and 2 MHz frequency. wrap_value = (sys_clock / PWM frequency)-1
     pwm_set_wrap(slice_num, wrap_value);                      // Set the wrap value (16-bit)
     pwm_set_chan_level(slice_num, channel, wrap_value * 0.4); // Set duty cycle (50%)
     pwm_set_enabled(slice_num, true);                         // Enable PWM output
@@ -41,8 +41,8 @@ void setup_pwm_sh(uint slice_num, uint channel)
 // PWM test pin configuration
 void setup_pwm2(uint slice_num, uint channel)
 {
-    // Set the wrap value to generate 100 kHz frequency
-    uint32_t wrap_value = 10000;                            // Based on 100 MHz system clock and 2 MHz frequency. wrap_value = (sys_clock / PWM frequency)-1
+    // Set the wrap value to generate 2 MHz frequency
+    uint32_t wrap_value = 13999;                            // Based on 230 MHz system clock and 2 MHz frequency. wrap_value = (sys_clock / PWM frequency)-1
     pwm_set_wrap(slice_num, wrap_value);                    // Set the wrap value (16-bit)
     pwm_set_chan_level(slice_num, channel, wrap_value / 2); // Set duty cycle (50%)
     pwm_set_enabled(slice_num, true);                       // Enable PWM output
@@ -50,7 +50,7 @@ void setup_pwm2(uint slice_num, uint channel)
 
 // Channel 0 is GPIO26
 #define CAPTURE_CHANNEL 0
-#define CAPTURE_DEPTH 3694 // 3694 samples by datasheet
+#define CAPTURE_DEPTH 3700 // 3694 samples by datasheet
 
 // dma read from adc fifo
 void dma_adc_read(uint dma_chan, uint8_t *capture_buf, dma_channel_config cfg)
@@ -93,7 +93,7 @@ void start_ccd_readout()
 int main()
 {
     // Set system clock frequency
-    set_sys_clock_khz(100000, true);
+    set_sys_clock_khz(140000, true);
     stdio_init_all();
 
     // Initialize PWM on the specified pin
@@ -103,16 +103,22 @@ int main()
     setup_pwm_mc(slice_num, channel);
 
     // // Initialize PWM test on the specified pin
-    gpio_set_function(PWM_TEST_PIN, GPIO_FUNC_PWM);
-    uint slice_num_test = pwm_gpio_to_slice_num(PWM_TEST_PIN);
-    uint channel_test = pwm_gpio_to_channel(PWM_TEST_PIN);
-    setup_pwm2(slice_num_test, channel_test);
+    // gpio_set_function(PWM_TEST_PIN, GPIO_FUNC_PWM);
+    // uint slice_num_test = pwm_gpio_to_slice_num(PWM_TEST_PIN);
+    // uint channel_test = pwm_gpio_to_channel(PWM_TEST_PIN);
+    // setup_pwm2(slice_num_test, channel_test);
 
+    // Initialize PWM for SH
+    gpio_set_function(SH_PIN, GPIO_FUNC_PWM);
+    uint slice_num_sh = pwm_gpio_to_slice_num(SH_PIN);
+    uint channel_sh = pwm_gpio_to_channel(SH_PIN);
+    setup_pwm_sh(slice_num_sh, channel_sh);
+    pwm_set_enabled(slice_num_sh, false); // Disable SH output for now
 
     // // Initialize GPIO for SH
-    gpio_init(SH_PIN);
-    gpio_set_dir(SH_PIN, GPIO_OUT);
-    gpio_put(SH_PIN, 0); // without 74hc04
+    // gpio_init(SH_PIN);
+    // gpio_set_dir(SH_PIN, GPIO_OUT);
+    // gpio_put(SH_PIN, 0); // without 74hc04
 
     // Initialize GPIO for ICG
     gpio_init(ICG_PIN);
@@ -154,7 +160,7 @@ int main()
     // Pace transfers based on availability of ADC samples
     channel_config_set_dreq(&cfg, DREQ_ADC);
 
-    uin t8_t capture_buf[CAPTURE_DEPTH];
+    uint8_t capture_buf[CAPTURE_DEPTH];
 
     // old code
     // while (true)
@@ -178,50 +184,23 @@ int main()
     // test code
     while (true)
     {
-        for (int i = 0; i < 50; ++i)
-        {
-            gpio_put(SH_PIN, 1); 
-            busy_wait_us_32(2);
-            gpio_put(SH_PIN, 0); 
-            busy_wait_us_32(8);
-        }
+
         // Control SH and ICG pins
         gpio_put(ICG_PIN, 0); // without 74hc04
-        
-
-        adc_run(true);
         // delay before exposure for 100 cpu cycles (~430 ns)
-        __asm volatile("nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n");
-        gpio_put(SH_PIN, 1); 
-        busy_wait_us_32(2);
-        gpio_put(SH_PIN, 0); 
-        busy_wait_us_32(8);
+        // __asm volatile("nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n");
+        pwm_set_enabled(slice_num_sh, true); // Enable SH output
+        busy_wait_us_32(10);
         gpio_put(ICG_PIN, 1); // without 74hc04
-        dma_channel_configure(dma_chan, &cfg,
-                          capture_buf,   // dst
-                          &adc_hw->fifo, // src
-                          CAPTURE_DEPTH, // transfer count
-                          true           // start immediately
-        );
-        for (int i = 0; i < 749; ++i)
-        {
-            gpio_put(SH_PIN, 1); 
-            busy_wait_us_32(2);
-            gpio_put(SH_PIN, 0); 
-            busy_wait_us_32(8);
-        }
-        //finish adc run and dma read
-        dma_channel_wait_for_finish_blocking(dma_chan);
-        printf("\n\rCapture finished\n\r");
-        adc_run(false);
-        adc_fifo_drain();
+        dma_adc_read(dma_chan, capture_buf, cfg);
         for (int i = 0; i < CAPTURE_DEPTH; ++i)
         {
             printf("%-3d, ", capture_buf[i]);
             if (i % 30 == 29)
-                printf("\n\r");
+                printf("\n");
             // __asm volatile("nop\n");
-            // busy_wait_us_32(1);
+            busy_wait_us_32(1);
         }
+        pwm_set_enabled(slice_num_sh, false); // Disable SH output
     }
 }
