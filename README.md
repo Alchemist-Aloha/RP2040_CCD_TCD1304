@@ -10,4 +10,6 @@ Use second core to output spectrum
 
 Signal average
 
+Tunable timing
+
 ![image](https://github.com/user-attachments/assets/d66bbdf7-fa45-4507-a215-32223e8315aa)
