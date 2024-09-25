@@ -9,4 +9,5 @@ To view the captured spectrum, upload the compiled UF2 file from TCD1304.c, and 
 Use second core to output spectrum
 
 Signal average
+
 ![image](https://github.com/user-attachments/assets/d66bbdf7-fa45-4507-a215-32223e8315aa)
