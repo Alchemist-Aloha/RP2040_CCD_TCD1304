@@ -4,4 +4,12 @@ This project utilizes the typical drive circuit from the TCD1304 datasheet, excl
 
 To view the captured spectrum, upload the compiled UF2 file from TCD1304.c, and then run plot.py to plot the data received via the USB serial port.
 
+**To do**
+
+Use the second core to do output work
+
+Signal average
+
+Tunable timing
+
 ![image](https://github.com/user-attachments/assets/d66bbdf7-fa45-4507-a215-32223e8315aa)
