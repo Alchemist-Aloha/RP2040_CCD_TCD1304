@@ -6,7 +6,7 @@ To view the captured spectrum, upload the compiled UF2 file from TCD1304.c, and 
 
 **To do**
 
-Use second core to output spectrum
+Use second core to do output work
 
 Signal average
 
