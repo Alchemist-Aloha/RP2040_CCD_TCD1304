@@ -5,7 +5,6 @@
 #include "hardware/timer.h"
 #include "hardware/clocks.h"
 #include "hardware/pwm.h"
-#include "hardware/irq.h"
 // For ADC input:
 #include "hardware/adc.h"
 #include "hardware/dma.h"

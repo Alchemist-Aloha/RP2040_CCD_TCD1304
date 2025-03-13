@@ -61,7 +61,6 @@ target_link_libraries(TCD1304
         hardware_timer
         hardware_clocks
         hardware_pwm
-        hardware_irq
         )
 
 # Add the standard include files to the build
