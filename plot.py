@@ -64,7 +64,7 @@ try:
                 plt.ylabel('ADC Value')
                 # plt.ylim(0, 255)
                 plt.title('Captured Spectrum')
-                plt.pause(0.1)  # Pause briefly to allow the plot to update
+                plt.pause(0.02)  # Pause briefly to allow the plot to update
                 y_axis = []
 
             else:
