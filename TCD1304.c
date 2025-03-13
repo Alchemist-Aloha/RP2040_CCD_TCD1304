@@ -17,41 +17,39 @@
 #define ICG_PIN 13
 #define ADC_PIN 26
 
+#define PRINT_INTERVAL 30   // Print a line with 30 pixels
+#define CPU_FREQ_KHZ 200000 // CPU 200000 kHz
+#define CAPTURE_CHANNEL 0   // Channel 0 is GPIO26
+#define CAPTURE_DEPTH 3694  // 3694 samples including the dummy pixel by datasheet
+#define SH_PULSE_ON 20      // pulse on and off time (us)
+#define SH_PULSE_OFF 80     // pulse on and off time (us)
+#define SIGNAL_AVERAGE 10   // average the signal
 
-#define PRINT_INTERVAL 30
-#define CPU_FREQ_KHZ 200000 // 200000 kHz
-// Channel 0 is GPIO26
-#define CAPTURE_CHANNEL 0
-#define CAPTURE_DEPTH 3694 // 3694 samples by datasheet
-
-#define SH_PULSE_ON 20
-#define SH_PULSE_OFF 80
-// #define SH_PULSE_COUNT 74
-int SH_PULSE_COUNT = CAPTURE_DEPTH *2 /(SH_PULSE_ON + SH_PULSE_OFF); 
+const int SH_PULSE_COUNT = CAPTURE_DEPTH * 2 / (SH_PULSE_ON + SH_PULSE_OFF); // SH pulse cycle matches the readout time. The single cycle duration defines the exposure time.
 // PWM configuration
 void setup_pwm_mc(uint slice_num, uint channel)
 {
     // Set the wrap value to generate 2 MHz frequency
-    uint32_t wrap_value = CPU_FREQ_KHZ / 2000;              // Based on 100 MHz system clock and 2 MHz frequency. wrap_value = (sys_clock / PWM frequency)-1
+    uint32_t wrap_value = CPU_FREQ_KHZ / 2000;              // 2 MHz PWM frequency. wrap_value = (sys_clock / PWM frequency)-1
     pwm_set_wrap(slice_num, wrap_value);                    // Set the wrap value (16-bit)
     pwm_set_chan_level(slice_num, channel, wrap_value / 2); // Set duty cycle (50%)
     pwm_set_enabled(slice_num, true);                       // Enable PWM output
 }
 
-// PWM configuration of SH
+// PWM configuration of SH. Unused in this version
 void setup_pwm_sh(uint slice_num, uint channel)
 {
     // Set the wrap value to generate 100 kHz frequency
-    uint32_t wrap_value = CPU_FREQ_KHZ / 100;                 // Based on 200 MHz system clock and 2 MHz frequency. wrap_value = (sys_clock / PWM frequency)-1
+    uint32_t wrap_value = CPU_FREQ_KHZ / 100;                 // 2 MHz SH frequency. wrap_value = (sys_clock / PWM frequency)-1
     pwm_set_wrap(slice_num, wrap_value);                      // Set the wrap value (16-bit)
     pwm_set_chan_level(slice_num, channel, wrap_value * 0.4); // Set duty cycle (50%)
     pwm_set_enabled(slice_num, true);                         // Enable PWM output
 }
-// PWM test pin configuration
+// PWM test pin configuration. Unused in this version
 void setup_pwm2(uint slice_num, uint channel)
 {
     // Set the wrap value to generate 100 kHz frequency
-    uint32_t wrap_value = 40000;                            // Based on 100 MHz system clock and 2 MHz frequency. wrap_value = (sys_clock / PWM frequency)-1
+    uint32_t wrap_value = CPU_FREQ_KHZ / 5;                 // 5 kHz frequency for diagnose use. wrap_value = (sys_clock / PWM frequency)-1
     pwm_set_wrap(slice_num, wrap_value);                    // Set the wrap value (16-bit)
     pwm_set_chan_level(slice_num, channel, wrap_value / 2); // Set duty cycle (50%)
     pwm_set_enabled(slice_num, true);                       // Enable PWM output
@@ -79,7 +77,7 @@ void dma_adc_read(uint dma_chan, uint8_t *capture_buf, dma_channel_config cfg)
     adc_fifo_drain();
 }
 
-// initiate CCD readout
+// initiate CCD readout. Unused in this version
 void start_ccd_readout()
 {
     // Control SH and ICG pins
@@ -95,6 +93,7 @@ void start_ccd_readout()
     gpio_put(ICG_PIN, 1); // without 74hc04
 }
 
+// Control SH pin with a given count and delays. Can be used to control the exposure time.
 void control_sh_pin(int count, int high_delay, int low_delay)
 {
     for (int i = 0; i < count; ++i)
@@ -106,6 +105,7 @@ void control_sh_pin(int count, int high_delay, int low_delay)
     }
 }
 
+// Print the capture buffer. This function prints the captured data in lines with depth number of int8 pixel readings.
 void print_capture_buffer(uint8_t *buffer, int depth)
 {
     for (int i = 0; i < depth; ++i)
@@ -185,10 +185,10 @@ int main()
     {
         // Clear the capture buffer
         memset(capture_buf_sum, 0, sizeof(capture_buf));
-        for (int i = 0; i < 10; ++i)
+        for (int i = 0; i < SIGNAL_AVERAGE; ++i)
         {
             memset(capture_buf, 0, sizeof(capture_buf));
-            control_sh_pin(50, SH_PULSE_ON, SH_PULSE_OFF);
+            control_sh_pin(5, SH_PULSE_ON, SH_PULSE_OFF);
             // Control SH and ICG pins
             gpio_put(ICG_PIN, 0); // without 74hc04
             // delay before exposure for 60 cpu cycles (~300 ns)
@@ -218,7 +218,7 @@ int main()
             // Add the captured data to the sum buffer
             for (int j = 0; j < CAPTURE_DEPTH; ++j)
             {
-                capture_buf_sum[j] = (int8_t)((int32_t)capture_buf[j]+ (int32_t)capture_buf_sum[j])/2;
+                capture_buf_sum[j] = (int8_t)((int32_t)capture_buf[j] + (int32_t)capture_buf_sum[j]) / 2;
             }
         }
         printf("\n\rCapture finished\n\r");
