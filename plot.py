@@ -2,103 +2,78 @@ import matplotlib.pyplot as plt
 import serial  # To read data from serial port
 import numpy as np
 
-PORT = 'COM23'  # Replace with your COM port
-# Reading data from serial (replace with your COM port and baudrate)
-
+PORT = 'COM10'  # Replace with your COM port
 
 # Function to read capture_buf data from the serial port
-
-
-def read_capture_buf():
+def read_capture_buf(ser):
     buf = []
     while True:
         try:
             line = ser.readline().decode('utf-8').strip()
-        except:
-            print("Error reading from serial port.")
-        # print(line)
+        except Exception as e:
+            print(f"Error reading from serial port: {e}")
+            continue
         if line == "Capture finished":
             print("start record")
             break
     while True:
         try:
             line = ser.readline().decode('utf-8').strip()
-        except:
-            print("Error reading from serial port.")
+        except Exception as e:
+            print(f"Error reading from serial port: {e}")
+            continue
         if line == "Capture finished":
             print("end record")
             break
         try:
             values = line.split(",")  # Splitting values by commas
             buf += [int(val) for val in values if val.strip()]
-
         except ValueError:
             pass
     return buf
-# Plotting function
-
-
-def plot_spectrum(capture_buf,line):
-    if not capture_buf:
-        print("No data to plot.")
-        return
-
-    # # Create the x-axis (index) for plotting
-    # x_axis = np.arange(len(capture_buf))
-
-    # plt.figure(figsize=(10, 6))
-    # plt.plot(x_axis, capture_buf, label='ADC Values')
-    # plt.xlabel('Sample Number')
-    # plt.ylabel('ADC Value')
-    # plt.ylim(0,255)
-    # plt.title('Captured Spectrum')
-    # plt.grid(True)
-    # plt.legend()
-    # plt.show()
-    
-    # Update the line with new data and redraw the figure
-    line.set_ydata(capture_buf)
-    plt.draw()
-    plt.pause(0.01)  # Pause briefly to allow the plot to update
-
 
 
 # Main code to read and plot the spectrum
 try:
-    capture_buf = []
-    ser = serial.Serial(PORT, 115200, timeout=1)
-    # Reading capture buffer from serial
-    print("Reading capture buffer data...")
-    capture_buf = read_capture_buf()
-    ser.close()
-    plt.ion()  # Turn on interactive mode
-    fig, ax = plt.subplots(figsize=(10, 6))
-    x_axis = np.arange(len(capture_buf))
-    # Initial plot setup
-    line, = ax.plot(x_axis, np.zeros(len(capture_buf)), label='ADC Values')  # Initialize with zeros
-    ax.set_xlabel('Sample Number')
-    ax.set_ylabel('ADC Value')
-    ax.set_ylim(0, 255)
-    ax.set_title('Captured Spectrum')
-    ax.grid(True)
-    ax.legend()
-    
-    while True:
-        capture_buf = []
-        ser = serial.Serial(PORT, 115200, timeout=1)
-        # Reading capture buffer from serial
-        print("Reading capture buffer data...")
-        capture_buf = read_capture_buf()
+    with serial.Serial(PORT, 115200, timeout=1) as ser:
 
-        # Plotting the captured buffer
-        if capture_buf:
-            print(f"Captured {len(capture_buf)} samples.")
-            plot_spectrum(capture_buf,line)
+        capture_buf = read_capture_buf(ser)
+        plt.ion()  # Turn on interactive mode
+        # fig, ax = plt.subplots(figsize=(10, 6))
+        # Initial plot setup
+        graph = plt.plot(np.arange(len(capture_buf)),capture_buf, label='ADC Values')[0]  # Initialize with zeros
+        plt.xlabel('Sample Number')
+        plt.ylabel('ADC Value')
+        # plt.ylim(0, 255)
+        plt.title('Captured Spectrum')
+        # ax.grid(True)
+        # ax.legend()
 
-        # Wait before the next read (for simulation purposes)
-        # input("Press Enter to capture the next spectrum...")
-        ser.close()
+        while True:
+            # Reading capture buffer from serial
+            print("Reading capture buffer data...")
+            capture_buf = read_capture_buf(ser)
+
+            # Plotting the captured buffer
+            if capture_buf:
+                print(f"Captured {len(capture_buf)} samples.")
+                # removing the older graph
+                graph.remove()
+                graph = plt.plot(np.arange(len(capture_buf)),capture_buf, label='ADC Values')[0]
+                plt.xlabel('Sample Number')
+                plt.ylabel('ADC Value')
+                # plt.ylim(0, 255)
+                plt.title('Captured Spectrum')
+                plt.pause(0.1)  # Pause briefly to allow the plot to update
+                y_axis = []
+
+            else:
+                graph.remove()
+                print("No data to plot.")
+                continue
+        
+except serial.SerialException as e:
+    print(f"Serial port error: {e}")
+
 except KeyboardInterrupt:
     print("Exiting program...")
-finally:
-    ser.close()
