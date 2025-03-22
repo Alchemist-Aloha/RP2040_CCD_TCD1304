@@ -22,7 +22,7 @@
 #define CAPTURE_CHANNEL 0   // Channel 0 is GPIO26
 #define CAPTURE_DEPTH 3694  // 3694 samples including the dummy pixel by datasheet
 #define SH_PULSE_ON 20      // pulse on and off time (us)
-#define SH_PULSE_OFF 80     // pulse on and off time (us)
+#define SH_PULSE_OFF 20     // pulse on and off time (us)
 #define SIGNAL_AVERAGE 10   // average the signal
 
 const int SH_PULSE_COUNT = CAPTURE_DEPTH * 2 / (SH_PULSE_ON + SH_PULSE_OFF); // SH pulse cycle matches the readout time. The single cycle duration defines the exposure time.
@@ -56,7 +56,7 @@ void setup_pwm2(uint slice_num, uint channel)
 }
 
 // dma read from adc fifo
-void dma_adc_read(uint dma_chan, uint8_t *capture_buf, dma_channel_config cfg)
+void dma_adc_read(uint dma_chan, uint16_t *capture_buf, dma_channel_config cfg)
 {
     // Set up the DMA to start transferring data as soon as it appears in FIFO
     dma_channel_configure(dma_chan, &cfg,
@@ -106,7 +106,7 @@ void control_sh_pin(int count, int high_delay, int low_delay)
 }
 
 // Print the capture buffer. This function prints the captured data in lines with depth number of int8 pixel readings.
-void print_capture_buffer(uint8_t *buffer, int depth)
+void print_capture_buffer(uint16_t *buffer, int depth)
 {
     for (int i = 0; i < depth; ++i)
     {
@@ -154,7 +154,7 @@ int main()
         true,  // Enable DMA data request (DREQ)
         1,     // DREQ (and IRQ) asserted when at least 1 sample present
         false, // We won't see the ERR bit because of 8 bit reads; disable.
-        true   // Shift each sample to 8 bits when pushing to FIFO
+        false   // Shift each sample to 8 bits when pushing to FIFO
     );
 
     // Divisor of 0 -> full speed. Free-running capture with the divider is
@@ -172,15 +172,15 @@ int main()
     dma_channel_config cfg = dma_channel_get_default_config(dma_chan);
 
     // Reading from constant address, writing to incrementing byte addresses
-    channel_config_set_transfer_data_size(&cfg, DMA_SIZE_8);
+    channel_config_set_transfer_data_size(&cfg, DMA_SIZE_16);
     channel_config_set_read_increment(&cfg, false);
     channel_config_set_write_increment(&cfg, true);
 
     // Pace transfers based on availability of ADC samples
     channel_config_set_dreq(&cfg, DREQ_ADC);
 
-    uint8_t capture_buf[CAPTURE_DEPTH];
-    uint8_t capture_buf_sum[CAPTURE_DEPTH];
+    uint16_t capture_buf[CAPTURE_DEPTH];
+    uint16_t capture_buf_sum[CAPTURE_DEPTH];
     while (true)
     {
         // Clear the capture buffer
@@ -189,6 +189,7 @@ int main()
         {
             memset(capture_buf, 0, sizeof(capture_buf));
             control_sh_pin(5, SH_PULSE_ON, SH_PULSE_OFF);
+            adc_run(true);
             // Control SH and ICG pins
             gpio_put(ICG_PIN, 0); // without 74hc04
             // delay before exposure for 60 cpu cycles (~300 ns)
@@ -197,10 +198,11 @@ int main()
             gpio_put(SH_PIN, 1);
             busy_wait_us_32(SH_PULSE_ON);
             gpio_put(SH_PIN, 0);
-            busy_wait_us_32(SH_PULSE_OFF);
+            busy_wait_us_32(5); // ICG pulse delay t1
             gpio_put(ICG_PIN, 1); // without 74hc04
+            busy_wait_us_32(SH_PULSE_OFF - 5); 
             // control_sh_pin(1000, 2, 8);
-            adc_run(true);
+            // adc_run(true);
             dma_channel_configure(dma_chan, &cfg,
                                   capture_buf,   // dst
                                   &adc_hw->fifo, // src
@@ -218,7 +220,7 @@ int main()
             // Add the captured data to the sum buffer
             for (int j = 0; j < CAPTURE_DEPTH; ++j)
             {
-                capture_buf_sum[j] = (int8_t)((int32_t)capture_buf[j] + (int32_t)capture_buf_sum[j]) / 2;
+                capture_buf_sum[j] = (int16_t)((int32_t)capture_buf[j] + (int16_t)capture_buf_sum[j]) / 2;
             }
         }
         printf("\n\rCapture finished\n\r");
